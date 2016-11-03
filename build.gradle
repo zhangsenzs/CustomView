@@ -1,5 +1,22 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+ext {
+    configuration = [
+            applicationId    : "com.example.zs.customview",
+            buildToolsVersion: "25.0.0",
+            compileVersion   : 24,
+            minSdk           : 15,
+            targetSdk        : 25,
+            versionCode      : 1,
+            versionName      : "1.0.0",
+            storeFile        : file("D:\\Android\\MyKeyStore\\thit.jks"),
+            keyAlias         : "christian_zs",
+            keyPassword      : "zs19920317",
+            storePassword    : "zs19920317",
+    ]
+}
+
+
 buildscript {
     repositories {
         jcenter()

@@ -1,29 +1,62 @@
 apply plugin: 'com.android.application'
 
+def cfg = rootProject.ext.configuration // 配置
 android {
-    compileSdkVersion 24
-    buildToolsVersion "25.0.0"
+    compileSdkVersion cfg.compileVersion
+    buildToolsVersion cfg.buildToolsVersion
     defaultConfig {
-        applicationId "com.example.zs.customview"
-        minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId cfg.applicationId
+        minSdkVersion cfg.minSdk
+        targetSdkVersion cfg.targetSdk
+        versionCode cfg.versionCode
+        versionName cfg.versionName
     }
+
+    signingConfigs {
+        release {
+            storeFile cfg.storeFile
+            keyAlias cfg.keyAlias
+            keyPassword cfg.keyPassword
+            storePassword cfg.storePassword
+        }
+    }
+
+    // 多渠道打包
+    productFlavors {
+        thit {}
+    }
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [CHANNEL_VALUE: name]
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    if (output.outputFile != null && output.outputFile.name.endsWith('.apk')
+                            && 'release'.equals(variant.buildType.name)) {
+                        def apkFile = new File(output.outputFile.getParent(),
+                                "Christian_v${variant.versionName}(${variant.versionCode})_${variant.flavorName}.apk")
+                        output.outputFile = apkFile
+                    }
+                }
+            }
+        }
+
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            signingConfig signingConfigs.release
         }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
 }
