@@ -31,5 +31,4 @@ public class App extends Application {
     // 初始化配置信息
     private void init() {
     }
-
 }
